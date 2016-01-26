@@ -1,5 +1,7 @@
 """
 Simple Flask web site 
+
+Edited by Omar Alamoudi
 """
 
 import flask
@@ -65,14 +67,6 @@ def index():
   app.logger.debug("At least one seems to be set correctly")
   return flask.render_template('vocab.html')
 
-@app.route("/keep_going")
-def keep_going():
-  """
-  After initial use of index, we keep the same scrambled
-  word and try to get more matches
-  """
-  flask.g.vocab = WORDS.as_list();
-  return flask.render_template('vocab.html')
   
 
 @app.route("/success")
@@ -86,7 +80,7 @@ def success():
 #   a JSON request handler
 #######################
 
-@app.route("/_check", methods = ["POST"])
+@app.route("/_check", methods = ["GET"])
 def check():
   """
   User has submitted the form with a word ('attempt')
@@ -99,9 +93,12 @@ def check():
   app.logger.debug("Entering check")
 
   ## The data we need, from form and from cookie
-  text = request.form["attempt"]
+  text = request.args.get("key", type=str)
   jumble = flask.session["jumble"]
   matches = flask.session.get("matches", []) # Default to empty list
+  
+  # Log
+  app.logger.debug("Got a JSON request") 
 
   ## Is it good? 
   in_jumble = LetterBag(jumble).contains(text)
@@ -112,35 +109,21 @@ def check():
     ## Cool, they found a new word
     matches.append(text)
     flask.session["matches"] = matches
+    print(matches)
+    rslt = {"matches":matches} # set the matches
   elif text in matches:
-    flask.flash("You already found {}".format(text))
+      rslt = {"message":"You already found {}".format(text)} # set the message if word already found
   elif not matched:
-    flask.flash("{} isn't in the list of words".format(text))
+      rslt = {"message":"{} isn't in the list of words".format(text)} # Set the message if word not on the list
   elif not in_jumble:
-    flask.flash('"{}" can\'t be made from the letters {}'.format(text,jumble))
+      rslt = {"message":'"{}" can\'t be made from the letters {}'.format(text)} # Set the massage if not using the correct letters
   else:
     app.logger.debug("This case shouldn't happen!")
     assert False  # Raises AssertionError
 
-  ## Choose page:  Solved enough, or keep going? 
-  if len(matches) >= flask.session["target_count"]:
-    return flask.redirect(url_for("success"))
-  else:
-    return flask.redirect(url_for("keep_going"))
+  return jsonify(result=rslt) # Send the JSON 
 
-###############
-# AJAX request handlers 
-#   These return JSON, rather than rendering pages. 
-###############
-
-@app.route("/_example")
-def example():
-  """
-  Example ajax request handler
-  """
-  app.logger.debug("Got a JSON request");
-  rslt = { "key": "value" }
-  return jsonify(result=rslt)
+  
 
 
 #################

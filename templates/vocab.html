@@ -80,36 +80,60 @@
 <br />
 <div class="row">
   <div class="col-xs-6 text-center">
-  <form id="entry" method="POST" action="/_check">
+  <form id="entry" method="GET" action="/_check">
     <label for="attempt">Word:</label>
     <input id="attempt" name="attempt" type="text" width="15"
       autocomplete="off"  autofocus />
-    <input type="submit" name="try" />
+      <!--input type="submit" name="try" />-->
   </form>
 </div></div>
 
 <br />
-
-{% if session.matches|length is not equalto 0  %}
-<h2>You found </h2>
-<p id="results">
-  {% for match in session.matches %}
-  {{ match }} 
-  {% endfor %}
+<p class="message"></p>
+<h2 id="found" style="display:none;" >You found</h2>
+<p id="result">
 </p>
-{% endif %}
 
+<script>
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <!-- Mismatch, already found, etc. "flashed" from Python -->
-    {% for message in messages %}
-      <p class="message">{{ message }}</p>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+// Suppress normal form submission
+$("#entry").submit( function(event) {
+   event.preventDefault();
+  });
 
-
-
+// On each keystroke, ask the server whether the current 
+// word is long enough. 
+// (We use 'keyup' because the form value
+// is updated before that event is generated.  keypress doesn't work.)
+//
+$("#attempt").keyup(function() {
+   var value = $("#attempt").val();
+   $.getJSON( "/_check", { key: value }, 
+              function(data) {
+                var rsval = data.result.matches;
+                var msg = data.result.message;
+                console.log("rsval: "+rsval);
+                console.log("msg: "+msg);
+                if (value != ''){
+                    if (msg !=undefined){
+                        $(".message").html(msg); // set massage as you type
+                    } else {
+                    $(".message").html('');
+                    }    //end else msg
+                }// end if value
+                if (rsval != undefined){
+                    $("#attempt").val("");// reset attempt
+                    $("#found").attr("style","display:initial ;");// Show You found
+                    $("#result").html("");// empty result paragraph
+                    for (word in rsval){
+                        $("#result").append(rsval[word]+"<br/>");
+                    } // end for
+                    if (rsval.length >1){
+                        window.location.replace("success");
+                    }//end if rsval.length
+                } //end if rsval exist
+                            });//end getJSON
+   });// end keyup
+</script>
  </div> <!-- container -->
 </body> </html>
