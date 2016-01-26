@@ -17,7 +17,8 @@ have different anagrams.
 ## Authors 
 
 Initial version by M Young; to be revised by CIS 399se students. 
-Edited Verdion by Omar Alamoudi.
+
+Edited Version by Omar Alamoudi. oka(at)cs(dot)uoregon(dot)edu.
 
 ## Status
 
