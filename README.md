@@ -17,23 +17,28 @@ have different anagrams.
 ## Authors 
 
 Initial version by M Young; to be revised by CIS 399se students. 
+Edited Verdion by Omar Alamoudi.
 
 ## Status
 
-This is the 'skeleton' version for a CIS 322 project.  It uses conventional 
-interaction through a form, interacting only when the user submits the form. 
-Assignment is to replace the interaction with AJAX interaction on each 
-keystroke. 
+Working on ix 
+List of all edited files
+* flask_vocab.py
+* templates/vocab.html
+* COUNFIG.py
+* Makefile
 
-## Minijax? 
+## Where to find it 
 
-flask_minijax.py and templates/minijax.html are a tiny example of using JQuery 
-with flask for an Ajax application.  (To be deleted in revised version of the project. 
+On ix port 5955
+
+`ix.cs.uoregon.edu/~oka/cis399se/htbin/proj3-anagrams/` 
+
 
 
 ## To run automated tests 
 * `nosetests`
-
+Working correctly
 There are currently nose tests for vocab.py, letterbag.py, and jumble.py. 
 
 
